@@ -9,3 +9,6 @@ AGENTS.md
 *.jpeg
 # Keep only the poster
 !hero-poster.jpg
+# Exclude unused assets from deploy
+stone-source-crop.webp
+hero-poster.webp

@@ -1,3 +1,4 @@
+# v2 — deploy trigger 
 """
 Leafgo Client Preview — Minimal HTTP server with Basic Auth.
 Deploy: Railway, single command.

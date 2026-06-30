@@ -23,6 +23,15 @@ class AuthHandler(http.server.SimpleHTTPRequestHandler):
 
     def do_GET(self):
         if self._check_auth():
+            # Clean URL redirects
+            path = self.path.split('?')[0]  # strip query string
+            clean_urls = {
+                '/impressum': '/impressum.html',
+                '/datenschutz': '/datenschutz.html',
+                '/vorschau': '/form-preview.html',
+            }
+            if path in clean_urls:
+                self.path = clean_urls[path] + ('?' + self.path.split('?')[1] if '?' in self.path else '')
             super().do_GET()
 
     def _check_auth(self):

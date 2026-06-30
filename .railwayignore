@@ -1,0 +1,11 @@
+.git
+_archive
+.gitignore
+README.md
+AGENTS.md
+# Exclude original JPG files — WebP versions are used
+*.jpg
+*.JPG
+*.jpeg
+# Keep only the poster
+!hero-poster.jpg

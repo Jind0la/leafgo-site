@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Anfrage-Vorschau — Leaf Go</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: #f5f3ef;
+    color: #1a1a1a;
+    line-height: 1.7;
+    padding: 2rem;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .preview-badge {
+    display: inline-block;
+    background: #e74c3c;
+    color: #fff;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 4px 12px;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+  }
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: #5a7d3a;
+    margin-bottom: 0.3rem;
+  }
+  .subtitle {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 1rem;
+  }
+  .field {
+    margin-bottom: 1.5rem;
+  }
+  .field-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #5a7d3a;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  .field-value {
+    font-size: 1.05rem;
+    background: #fff;
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+    border: 1px solid #e0dcd5;
+    word-break: break-word;
+  }
+  .field-value.empty {
+    color: #ccc;
+    font-style: italic;
+  }
+  .actions {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #ddd;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-block;
+    padding: 0.7rem 1.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s;
+  }
+  .btn-primary {
+    background: #5a7d3a;
+    color: #fff;
+  }
+  .btn-primary:hover { background: #4a6b2e; }
+  .btn-secondary {
+    background: #fff;
+    color: #5a7d3a;
+    border: 1px solid #5a7d3a;
+  }
+  .btn-secondary:hover { background: #f0f4eb; }
+  .note {
+    margin-top: 2rem;
+    font-size: 0.8rem;
+    color: #999;
+    background: #fffbe6;
+    border: 1px solid #ffe58f;
+    padding: 1rem;
+    border-radius: 6px;
+  }
+</style>
+</head>
+<body>
+
+<span class="preview-badge">🔒 VORSCHAU · NICHT LIVE</span>
+
+<h1>Neue Anfrage von der Website</h1>
+<p class="subtitle" id="subtitle">Diese Seite zeigt, wie eine eingegangene Kontaktanfrage für Magnus aussieht.<br>Im Prototyp wird das Formular noch nicht versendet.</p>
+
+<div class="field">
+  <div class="field-label">Name *</div>
+  <div class="field-value" id="fieldName">—</div>
+</div>
+
+<div class="field">
+  <div class="field-label">E-Mail</div>
+  <div class="field-value" id="fieldEmail">—</div>
+</div>
+
+<div class="field">
+  <div class="field-label">Telefon *</div>
+  <div class="field-value" id="fieldPhone">—</div>
+</div>
+
+<div class="field">
+  <div class="field-label">Ihre Nachricht *</div>
+  <div class="field-value" id="fieldMessage">—</div>
+</div>
+
+<div class="field">
+  <div class="field-label">Eingegangen am</div>
+  <div class="field-value" id="dateField">—</div>
+</div>
+
+<div class="actions">
+  <a href="tel:+4917680539117" class="btn btn-primary">📞 Jetzt anrufen</a>
+  <a href="mailto:info@leaf-go.de" class="btn btn-secondary">✉️ E-Mail schreiben</a>
+</div>
+
+<div class="note">
+  <strong>ℹ️ Hinweis für den Prototyp:</strong><br>
+  Diese Seite ist eine statische Vorschau. Im fertigen System würde hier eine echte Anfrage stehen, die per E-Mail an Magnus gesendet wurde. Die URL ist nicht verlinkt und nicht von Suchmaschinen indexierbar.
+</div>
+
+<script>
+  // Read URL params (from form submission)
+  var params = new URLSearchParams(window.location.search);
+  var hasData = params.get('name') || params.get('phone') || params.get('message');
+  
+  if (hasData) {
+    // Show real submitted data
+    document.getElementById('subtitle').innerHTML = 'So sieht die Anfrage für Magnus aus:<br><small style="color:#5a7d3a">(Prototyp — wird noch nicht per E-Mail versendet)</small>';
+    
+    var name = params.get('name') || '';
+    var email = params.get('email') || '';
+    var phone = params.get('phone') || '';
+    var message = params.get('message') || '';
+    
+    document.getElementById('fieldName').textContent = name || '(nicht angegeben)';
+    document.getElementById('fieldEmail').textContent = email || '(nicht angegeben)';
+    document.getElementById('fieldPhone').textContent = phone || '(nicht angegeben)';
+    document.getElementById('fieldMessage').textContent = message || '(nicht angegeben)';
+    
+    if (!email) document.getElementById('fieldEmail').classList.add('empty');
+  } else {
+    // Show example data
+    document.getElementById('fieldName').textContent = 'Familie Schmidt';
+    document.getElementById('fieldEmail').textContent = 'beispiel@email.de';
+    document.getElementById('fieldPhone').textContent = '0176 12345678';
+    document.getElementById('fieldMessage').textContent = 'Guten Tag Herr Neitzel, wir haben eine große Eiche im Garten die zurückgeschnitten werden muss. Können Sie uns ein Angebot machen? Mit freundlichen Grüßen';
+    document.getElementById('subtitle').innerHTML = 'Beispiel-Anfrage:<br><small style="color:#888">(Direktaufruf ohne Formular-Daten — zeigt Beispieldaten)</small>';
+  }
+  
+  // Show current date
+  var now = new Date();
+  var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+  document.getElementById('dateField').textContent = now.toLocaleDateString('de-DE', options) + ' Uhr';
+</script>
+
+</body>
+</html>

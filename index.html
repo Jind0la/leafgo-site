@@ -9,14 +9,14 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Leaf Go — Baumpflege · Gartengestaltung · Naturstein">
 <meta property="og:description" content="Professionelle Baumpflege, Landschaftsbau und Natursteinarbeiten. Verwurzelt im Ruhrgebiet.">
-<meta property="og:image" content="https://leaf-go.de/IMG_4453.jpg">
+<meta property="og:image" content="https://leaf-go.de/IMG_4453.webp">
 <meta property="og:locale" content="de_DE">
 <meta property="og:url" content="https://leaf-go.de/">
 <meta property="og:site_name" content="Leaf Go">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Leaf Go — Baumpflege · Gartengestaltung · Naturstein">
 <meta name="twitter:description" content="Professionelle Baumpflege, Landschaftsbau und Natursteinarbeiten im Ruhrgebiet. European Tree Worker Magnus Neitzel.">
-<meta name="twitter:image" content="https://leaf-go.de/IMG_4453.jpg">
+<meta name="twitter:image" content="https://leaf-go.de/IMG_4453.webp">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="theme-color" content="#5a7d3a">
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -29,7 +29,7 @@
   "@type": "LocalBusiness",
   "@id": "https://leaf-go.de/#business",
   "name": "Leaf Go",
-  "image": "https://leaf-go.de/IMG_4453.jpg",
+  "image": "https://leaf-go.de/IMG_4453.webp",
   "url": "https://leaf-go.de/",
   "telephone": "+4917680539117",
   "email": "info@leaf-go.de",
@@ -328,7 +328,7 @@
 
   footer { text-align: center; padding: 2rem; font-size: 0.75rem; color: #aaa; }
 
-  .reveal { opacity: 0; will-change: transform, opacity; }
+  .reveal { opacity: 0; }
   .reveal-up { transform: translateY(60px); }
   .reveal-left { transform: translateX(-40px); }
   .reveal-right { transform: translateX(40px); }
@@ -363,7 +363,8 @@
 <!-- ════════════ SCROLL-DRIVEN VIDEO HEADER ════════════ -->
 <div id="header-scrub">
   <div id="header-pin">
-    <video id="headerVideo" muted playsinline preload="auto"
+    <video id="headerVideo" muted playsinline preload="metadata"
+           poster="hero-poster.webp"
            src="hero-header-scrub.mp4"></video>
     <div class="header-overlay"></div>
     <div class="header-text" id="headerText">
@@ -391,7 +392,7 @@
       <p class="reveal reveal-up">Heute bringt Magnus dieses Wissen zu Ihnen nach Hause. Zusammen mit der Präzision eines Steinmetzes und dem gestalterischen Blick eines Landschaftsgärtners.</p>
     </div>
     <div class="story-visual reveal reveal-right" id="storyImg">
-      <img src="craft.jpg" alt="Baumpflege mit STIHL — echte Arbeit vor Ort" loading="lazy">
+      <img src="craft.webp" alt="Baumpflege mit STIHL — echte Arbeit vor Ort" loading="lazy">
       <p class="caption">Präzision, die man spürt. An jedem Ast, an jedem Stein.</p>
     </div>
   </div>
@@ -400,7 +401,7 @@
 <section class="portrait-section" id="portrait">
   <div class="portrait-grid">
     <div class="portrait-img-wrap reveal reveal-left">
-      <img src="IMG_4453.jpg" alt="Magnus Neitzel — Leaf Go Gründer" loading="lazy">
+      <img src="IMG_4453.webp" alt="Magnus Neitzel — Leaf Go Gründer" loading="lazy">
     </div>
     <div class="portrait-text reveal reveal-right">
       <p class="section-label">Das Gesicht dahinter</p>
@@ -423,21 +424,21 @@
   <h2 class="reveal reveal-up">Drei Disziplinen.<br>Eine Philosophie.</h2>
   <div class="services-grid">
     <div class="service-card reveal reveal-up" id="svc1">
-      <img src="IMG_5608.JPG" alt="Baumpflege per Seilklettertechnik" loading="lazy" style="object-position: center 30%;">
+      <img src="IMG_5608.webp" alt="Baumpflege per Seilklettertechnik" loading="lazy" style="object-position: center 30%;">
       <div class="body">
         <h3>Baumpflege &amp; Baumfällung</h3>
         <p>Kronenschnitt, Verkehrssicherung, Problemfällung — alles per Seilklettertechnik. Kein Hebebühnen-Lärm, kein zerstörter Rasen. Nur Können, das von oben kommt.</p>
       </div>
     </div>
     <div class="service-card reveal reveal-up" id="svc2">
-      <img src="garden.jpg" alt="Formschnitt und Gartenpflege beim Kunden" loading="lazy" style="object-position: center 40%;">
+      <img src="garden.webp" alt="Formschnitt und Gartenpflege beim Kunden" loading="lazy" style="object-position: center 40%;">
       <div class="body">
         <h3>Garten- &amp; Landschaftsbau</h3>
         <p>Neuanlagen, Wegebau, Pflanzungen, Teichbau, Zaunmontage. Von der Terrasse bis zum Staudenbeet — aus einer Hand, ohne Subunternehmer.</p>
       </div>
     </div>
     <div class="service-card reveal reveal-up" id="svc3">
-      <img src="stone.jpg" alt="Naturstein-Gartenrand aus echter Baustelle" loading="lazy" style="object-position: center 55%;">
+      <img src="stone.webp" alt="Naturstein-Gartenrand aus echter Baustelle" loading="lazy" style="object-position: center 55%;">
       <div class="body">
         <h3>Naturstein &amp; Trockenmauern</h3>
         <p>Massive Steinelemente, Restaurierung, Trockenmauern aus Ruhrsandstein. Sechs Jahre Steinmetz-Erfahrung fließen in jeden Quadratmeter.</p>
@@ -451,11 +452,11 @@
     <p class="section-label reveal reveal-up">In Aktion</p>
     <h2 class="reveal reveal-up">Echte Arbeit.<br>Echte Bilder.</h2>
     <div class="gallery-grid">
-      <div class="item tall reveal reveal-up"><img src="IMG_5602.JPG" alt="Baumkletterer in Aktion" loading="lazy"></div>
-      <div class="item reveal reveal-up"><img src="IMG_5605.JPG" alt="Baumpflege mit Kettensäge" loading="lazy"></div>
-      <div class="item reveal reveal-up"><img src="IMG_5361.jpg" alt="Gartenpflege und Formschnitt" loading="lazy"></div>
-      <div class="item tall reveal reveal-up"><img src="gallery-tree.jpg" alt="Magnus in der Baumkrone — Seilklettertechnik" loading="lazy" style="object-position: center 35%;"></div>
-      <div class="item wide reveal reveal-up"><img src="IMG_4236.jpg" alt="Gartenanlage mit Hortensien" loading="lazy" style="object-position: center 65%;"></div>
+      <div class="item tall reveal reveal-up"><img src="IMG_5602.webp" alt="Baumkletterer in Aktion" loading="lazy"></div>
+      <div class="item reveal reveal-up"><img src="IMG_5605.webp" alt="Baumpflege mit Kettensäge" loading="lazy"></div>
+      <div class="item reveal reveal-up"><img src="IMG_5361.webp" alt="Gartenpflege und Formschnitt" loading="lazy"></div>
+      <div class="item tall reveal reveal-up"><img src="gallery-tree.webp" alt="Magnus in der Baumkrone — Seilklettertechnik" loading="lazy" style="object-position: center 35%;"></div>
+      <div class="item wide reveal reveal-up"><img src="IMG_4236.webp" alt="Gartenanlage mit Hortensien" loading="lazy" style="object-position: center 65%;"></div>
     </div>
   </div>
 </section>
@@ -467,7 +468,7 @@
       <p>Unser Leaf Go Einsatzfahrzeug — voll ausgestattet mit STIHL Profi-Geräten, Kletterausrüstung und Allem, was es für Ihren Auftrag braucht. Kein Subunternehmer. Keine Leihtechnik. <span style="color:#fff;">Alles aus einer Hand.</span></p>
       <p style="color:#5a7d3a; font-size:0.9rem; margin-top:1rem; letter-spacing:0.05em;">LEAF-GO.DE &nbsp;·&nbsp; 0176 80539117</p>
     </div>
-    <div class="reveal reveal-right"><img src="IMG_5283.jpg" alt="Leaf Go Einsatzfahrzeug mit Anhänger" loading="lazy"></div>
+    <div class="reveal reveal-right"><img src="IMG_5283.webp" alt="Leaf Go Einsatzfahrzeug mit Anhänger" loading="lazy"></div>
   </div>
 </section>
 
@@ -495,7 +496,7 @@
   <p class="section-label reveal reveal-up">Ausrüstung</p>
   <h2 class="reveal reveal-up">Profi-Technik,<br>die man hört und spürt.</h2>
   <p class="reveal reveal-up" style="color:#555; max-width:550px; margin:0 auto;">STIHL. Der Maßstab in der Baumpflege. Wir setzen auf das Beste — weil Ihr Baum nichts anderes verdient.</p>
-  <img src="IMG_3306.jpg" alt="STIHL Profi-Geräte von Leaf Go" class="reveal reveal-scale" loading="lazy">
+  <img src="IMG_3306.webp" alt="STIHL Profi-Geräte von Leaf Go" class="reveal reveal-scale" loading="lazy">
 </section>
 
 <section class="voice" id="voice">
@@ -824,13 +825,30 @@
     if (e.key === 'Escape' && fcModal.classList.contains('active')) closeModal();
   });
 
-  // Simulated form submission
+  // Form submission → preview page (Prototyp)
   if (fcForm) {
     fcForm.addEventListener('submit', function(e) {
       e.preventDefault();
+      var name = document.getElementById('fcName').value.trim();
+      var email = document.getElementById('fcEmail').value.trim();
+      var phone = document.getElementById('fcPhone').value.trim();
+      var message = document.getElementById('fcMessage').value.trim();
+      
+      // Show success first
       document.querySelector('.fc-form-fields').style.display = 'none';
       document.querySelector('.fc-submit').style.display = 'none';
       document.querySelector('.fc-success').classList.add('show');
+      
+      // After 1.5s open preview page with form data
+      var params = new URLSearchParams();
+      params.set('name', name);
+      if (email) params.set('email', email);
+      params.set('phone', phone);
+      params.set('message', message);
+      
+      setTimeout(function() {
+        window.open('/form-preview.html?' + params.toString(), '_blank');
+      }, 1500);
     });
   }
 })();

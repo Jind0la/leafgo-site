@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaf Go — Baumpflege · Gartengestaltung · Naturstein</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: 18px; }
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+  .lenis.lenis-stopped { overflow: clip; }
+  body { font-family: 'Helvetica Neue', 'Arial', sans-serif; color: #1a1a1a; background: #0a0a08; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+
+  /* — Film grain — */
+  .grain { position: fixed; inset: 0; z-index: 9999; pointer-events: none; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-size: 200px; }
+  .vignette { position: fixed; inset: 0; z-index: 9998; pointer-events: none; background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.2) 100%); }
+
+  /* ════════════ SCROLL-DRIVEN VIDEO HERO ════════════ */
+  .hero-scrub {
+    position: relative; height: 350vh;
+  }
+  .hero-scrub-pin {
+    position: sticky; top: 0; height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .hero-video-wrap {
+    position: absolute; inset: 0;
+  }
+  .hero-video-wrap video {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover;
+    filter: brightness(0.45) saturate(0.6);
+    will-change: filter;
+  }
+  .hero-scrub-vignette {
+    position: absolute; inset: 0; z-index: 1;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(10,10,8,0.85) 100%);
+    pointer-events: none;
+  }
+
+  /* Leaf → Logo overlay */
+  .hero-leaf-overlay {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  .hero-leaf-svg {
+    width: min(55vw, 380px);
+    filter: drop-shadow(0 0 80px rgba(90,125,58,0.45));
+    will-change: transform, opacity;
+    opacity: 0;
+    transform: scale(0.25) rotate(-18deg) translateY(80px);
+  }
+
+  /* Text overlay */
+  .hero-scrub-text {
+    position: absolute; z-index: 3; bottom: 12%;
+    text-align: center; width: 100%; padding: 0 2rem;
+  }
+  .hero-scrub-text .label {
+    font-size: clamp(0.6rem, 1.6vw, 0.75rem);
+    letter-spacing: 7px; text-transform: uppercase;
+    color: rgba(90,125,58,0.55); margin-bottom: 20px;
+    opacity: 0; transform: translateY(20px);
+    will-change: transform, opacity;
+  }
+  .hero-scrub-text .title {
+    font-size: clamp(1.5rem, 4.5vw, 2.8rem);
+    color: #fff; line-height: 1.3; font-weight: 200;
+    opacity: 0; transform: translateY(30px);
+    will-change: transform, opacity;
+  }
+  .hero-scrub-text .accent {
+    display: inline-block; width: 40px; height: 1px;
+    background: #5a7d3a; margin: 20px 0;
+    opacity: 0; will-change: opacity;
+  }
+
+  /* Logo transition zone */
+  .logo-landing {
+    height: 150vh; position: relative;
+    display: flex; align-items: center; justify-content: center;
+    background: #0a0a08;
+  }
+  .logo-landing img {
+    width: min(55vw, 380px);
+    filter: brightness(0) invert(1) drop-shadow(0 0 80px rgba(90,125,58,0.25));
+    opacity: 0; transform: scale(2.2);
+    will-change: transform, opacity;
+  }
+
+  /* ── Site content (fades in after scroll intro) ── */
+  .site-content { background: #fafaf8; position: relative; z-index: 10; }
+
+  /* — Typo — */
+  h1, h2, h3 { font-weight: 300; letter-spacing: -0.02em; }
+  h2 { font-size: 2.6rem; line-height: 1.15; margin-bottom: 2rem; }
+  h3 { font-size: 1.3rem; text-transform: uppercase; letter-spacing: 0.12em; color: #5a7d3a; margin-bottom: 0.6rem; font-weight: 500; }
+
+  /* — Sections — */
+  section { padding: 7rem 2rem; max-width: 1100px; margin: 0 auto; }
+  .section-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.2em; color: #5a7d3a; margin-bottom: 1rem; font-weight: 600; }
+
+  /* — Story — */
+  .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+  .story-text .lead { font-size: 1.35rem; line-height: 1.6; color: #333; margin-bottom: 1.8rem; font-weight: 300; }
+  .story-text p { color: #555; margin-bottom: 1.2rem; font-size: 1rem; }
+  .highlight { background: linear-gradient(180deg, transparent 60%, rgba(90,125,58,0.15) 60%); padding: 0 0.1em; }
+  .story-visual { position: relative; }
+  .story-visual img { width: 100%; border-radius: 4px; box-shadow: 0 20px 60px rgba(0,0,0,0.12); }
+  .story-visual .caption { font-size: 0.75rem; color: #999; margin-top: 0.8rem; text-align: center; font-style: italic; }
+
+  /* — Portrait — */
+  .portrait-section { background: #fff; }
+  .portrait-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 4rem; align-items: center; }
+  .portrait-img-wrap { position: relative; }
+  .portrait-img-wrap img { width: 100%; border-radius: 4px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+  .portrait-img-wrap::after { content: ''; position: absolute; inset: -12px; border: 1px solid rgba(90,125,58,0.2); border-radius: 8px; z-index: -1; }
+  .portrait-text .name { font-size: 1.8rem; font-weight: 300; color: #1a1a1a; margin-bottom: 0.3rem; }
+  .portrait-text .role { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.15em; color: #5a7d3a; margin-bottom: 2rem; }
+
+  /* — Services — */
+  .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 4rem; }
+  .service-card { background: #fff; border-radius: 6px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.06); transition: transform 0.3s, box-shadow 0.3s; }
+  .service-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
+  .service-card img { width: 100%; height: 280px; object-fit: cover; }
+  .service-card .body { padding: 2rem; }
+  .service-card h3 { margin-bottom: 0.8rem; }
+  .service-card p { color: #666; font-size: 0.95rem; line-height: 1.6; }
+
+  /* — Gallery — */
+  .gallery { background: #f4f7f0; max-width: 100%; padding: 0; overflow: hidden; }
+  .gallery-inner { max-width: 1300px; margin: 0 auto; padding: 7rem 2rem; }
+  .gallery-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: 300px 250px; gap: 1rem; margin-top: 3rem; }
+  .gallery-grid .item { overflow: hidden; border-radius: 4px; position: relative; }
+  .gallery-grid .item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; }
+  .gallery-grid .item:hover img { transform: scale(1.05); }
+  .gallery-grid .item.tall { grid-row: span 2; }
+  .gallery-grid .item.wide { grid-column: span 2; }
+
+  /* — Van — */
+  .van-band { background: #1a1a1a; color: #fff; max-width: 100%; padding: 0; position: relative; overflow: hidden; }
+  .van-band::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 70% 50%, rgba(90,125,58,0.15) 0%, transparent 60%); pointer-events: none; }
+  .van-band-inner { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; position: relative; z-index: 1; }
+  .van-band img { width: 100%; border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+  .van-band .text h3 { color: #7aad4a; }
+  .van-band .text p { color: #bbb; font-size: 1rem; line-height: 1.7; }
+
+  /* — Trust — */
+  .trust { background: #fff; }
+  .trust-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; margin-top: 4rem; }
+  .trust-card { text-align: center; padding: 2.5rem 1.5rem; }
+  .trust-card .number { font-size: 3.5rem; font-weight: 200; color: #5a7d3a; line-height: 1; margin-bottom: 0.5rem; }
+  .trust-card .label { font-size: 0.95rem; color: #555; }
+  .cert-badge { display: inline-block; background: #1a1a1a; color: #fff; padding: 0.35rem 1rem; border-radius: 3px; font-size: 0.8rem; letter-spacing: 0.05em; margin-top: 0.8rem; }
+
+  /* — Equipment — */
+  .equipment { background: #fafaf8; text-align: center; }
+  .equipment img { max-width: 700px; width: 100%; border-radius: 6px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); margin-top: 2rem; }
+
+  /* — Voice — */
+  .voice { background: #1a1a1a; color: #ccc; position: relative; overflow: hidden; }
+  .voice::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 30%, rgba(90,125,58,0.08) 0%, transparent 70%); pointer-events: none; }
+  .voice blockquote { font-size: 1.7rem; font-weight: 200; line-height: 1.4; color: #e0e0e0; max-width: 800px; margin: 0 auto; text-align: center; font-style: italic; position: relative; z-index: 1; }
+  .voice .attribution { text-align: center; margin-top: 1.5rem; color: #5a7d3a; font-size: 0.9rem; letter-spacing: 0.06em; position: relative; z-index: 1; }
+
+  /* — Location — */
+  .location { text-align: center; }
+  .location-tags { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; }
+  .location-tag { background: #f4f7f0; color: #5a7d3a; padding: 0.6rem 1.4rem; border-radius: 50px; font-size: 0.9rem; letter-spacing: 0.03em; }
+
+  /* — CTA — */
+  .cta { text-align: center; background: #f4f7f0; }
+  .cta h2 { margin-bottom: 1rem; }
+  .cta p { color: #555; font-size: 1.1rem; max-width: 500px; margin: 0 auto 2.5rem; }
+  .cta-button { display: inline-block; background: #5a7d3a; color: #fff; padding: 1rem 3rem; border-radius: 4px; text-decoration: none; font-size: 1rem; letter-spacing: 0.04em; font-weight: 500; transition: background 0.2s; }
+  .cta-button:hover { background: #4a6b2e; }
+  .cta-contact { margin-top: 2rem; font-size: 0.9rem; color: #888; }
+  .cta-contact a { color: #5a7d3a; text-decoration: none; }
+
+  footer { text-align: center; padding: 2rem; font-size: 0.75rem; color: #aaa; }
+
+  /* — Scroll-reveal — */
+  .reveal { opacity: 0; will-change: transform, opacity; }
+  .reveal-up { transform: translateY(60px); }
+  .reveal-left { transform: translateX(-40px); }
+  .reveal-right { transform: translateX(40px); }
+  .reveal-scale { transform: scale(0.9); }
+
+  /* ── Floating Contact Button ── */
+  .floating-contact {
+    position: fixed; bottom: 30px; right: 30px; z-index: 500;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+  }
+  .floating-contact.visible { opacity: 1; transform: translateY(0); pointer-events: all; }
+  .floating-contact .fc-actions {
+    display: flex; flex-direction: column; gap: 10px;
+    opacity: 0; transform: translateY(10px) scale(0.9);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+  }
+  .floating-contact.expanded .fc-actions {
+    opacity: 1; transform: translateY(0) scale(1);
+    pointer-events: all;
+  }
+  .fc-btn {
+    width: 56px; height: 56px; border-radius: 50%; border: none;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+  }
+  .fc-btn:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(0,0,0,0.3); }
+  .fc-btn.fc-call { background: #5a7d3a; color: #fff; }
+  .fc-btn.fc-contact-btn { background: #4a6b2e; color: #fff; }
+  .fc-main {
+    width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer;
+    background: #5a7d3a; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 20px rgba(90,125,58,0.4);
+    transition: transform 0.3s, background 0.2s;
+    position: relative; z-index: 2;
+  }
+  .fc-main:hover { background: #4a6b2e; }
+  .floating-contact.expanded .fc-main {
+    transform: rotate(45deg); background: #4a6b2e;
+  }
+
+  /* ── Contact Form Modal ── */
+  .fc-modal-overlay {
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(10,10,8,0.6);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease; padding: 20px;
+  }
+  .fc-modal-overlay.active { opacity: 1; pointer-events: all; }
+  .fc-modal {
+    background: #fff; border-radius: 12px; padding: 2.5rem;
+    max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto;
+    position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    transform: translateY(20px) scale(0.97);
+    transition: transform 0.3s ease;
+  }
+  .fc-modal-overlay.active .fc-modal { transform: translateY(0) scale(1); }
+  .fc-modal-close {
+    position: absolute; top: 16px; right: 16px;
+    background: none; border: none; font-size: 24px; cursor: pointer;
+    color: #999; line-height: 1; padding: 4px; transition: color 0.2s;
+  }
+  .fc-modal-close:hover { color: #333; }
+  .fc-modal h3 { font-size: 1.6rem; font-weight: 300; color: #1a1a1a; margin-bottom: 0.5rem; }
+  .fc-modal .fc-subtitle { font-size: 0.9rem; color: #888; margin-bottom: 2rem; }
+  .fc-modal form { display: flex; flex-direction: column; gap: 1.2rem; }
+  .fc-modal .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+  .fc-modal .form-group label {
+    font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em;
+    color: #5a7d3a; font-weight: 600;
+  }
+  .fc-modal .form-group input,
+  .fc-modal .form-group textarea {
+    padding: 0.8rem 1rem; border: 1px solid #ddd; border-radius: 6px;
+    font-size: 0.95rem; font-family: inherit; background: #fafaf8;
+    transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+  }
+  .fc-modal .form-group input:focus,
+  .fc-modal .form-group textarea:focus {
+    border-color: #5a7d3a; box-shadow: 0 0 0 3px rgba(90,125,58,0.1);
+  }
+  .fc-modal .form-group textarea { min-height: 120px; resize: vertical; }
+  .fc-modal .fc-submit {
+    background: #5a7d3a; color: #fff; border: none;
+    padding: 1rem 2rem; border-radius: 6px; font-size: 1rem; font-weight: 500;
+    cursor: pointer; transition: background 0.2s; font-family: inherit;
+  }
+  .fc-modal .fc-submit:hover { background: #4a6b2e; }
+  .fc-modal .fc-success { display: none; text-align: center; padding: 2rem 0; }
+  .fc-modal .fc-success.show { display: block; }
+  .fc-modal .fc-success .icon { font-size: 48px; margin-bottom: 1rem; display: block; }
+  .fc-modal .fc-success h4 { font-size: 1.3rem; font-weight: 400; color: #1a1a1a; margin-bottom: 0.8rem; }
+  .fc-modal .fc-success p { color: #666; font-size: 1rem; line-height: 1.6; }
+  @media (max-width: 480px) {
+    .floating-contact { bottom: 20px; right: 20px; }
+    .fc-modal { padding: 1.8rem; }
+  }
+
+  /* — Mobile — */
+  @media (max-width: 768px) {
+    h2 { font-size: 1.9rem; }
+    .story-grid, .services-grid, .trust-grid, .portrait-grid, .van-band-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .voice blockquote { font-size: 1.3rem; }
+    section { padding: 4rem 1.5rem; }
+    .gallery-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; }
+    .gallery-grid .item.tall { grid-row: span 1; }
+    .gallery-grid .item.wide { grid-column: span 1; }
+    .reveal-left, .reveal-right { transform: translateY(40px); }
+    .portrait-grid { display: flex; flex-direction: column-reverse; }
+    .hero-scrub { height: 300vh; }
+    .hero-scrub-text { bottom: 18%; }
+  }
+
+
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+<div class="vignette"></div>
+
+<!-- ════════════ SCROLL-DRIVEN VIDEO HERO ════════════ -->
+<div class="hero-scrub" id="heroScrub">
+  <div class="hero-scrub-pin">
+    <div class="hero-video-wrap">
+      <video id="heroVideo" muted playsinline preload="auto"
+             src="leafgo-hero-scrub.mp4"></video>
+    </div>
+    <div class="hero-scrub-vignette"></div>
+
+    <!-- Leaf → Logo SVG overlay -->
+    <div class="hero-leaf-overlay" id="heroLeafOverlay">
+      <svg class="hero-leaf-svg" id="heroLeafSVG" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="leafGradH" cx="40%" cy="30%">
+            <stop offset="0%" stop-color="#7aad4a"/>
+            <stop offset="100%" stop-color="#4a6b2e"/>
+          </radialGradient>
+        </defs>
+        <path d="M100 30 C60 30 25 70 20 110 C15 145 35 170 60 180 C80 188 95 175 100 160 C105 175 120 188 140 180 C165 170 185 145 180 110 C175 70 140 30 100 30Z"
+              fill="url(#leafGradH)" opacity="0.85"/>
+        <line x1="100" y1="35" x2="100" y2="165" stroke="#2d4a12" stroke-width="1.5" opacity="0.6"/>
+        <path d="M100 60 Q80 55 60 65" stroke="#2d4a12" stroke-width="1" fill="none" opacity="0.4"/>
+        <path d="M100 60 Q120 55 140 65" stroke="#2d4a12" stroke-width="1" fill="none" opacity="0.4"/>
+        <path d="M100 90 Q70 80 45 95" stroke="#2d4a12" stroke-width="1" fill="none" opacity="0.4"/>
+        <path d="M100 90 Q130 80 155 95" stroke="#2d4a12" stroke-width="1" fill="none" opacity="0.4"/>
+        <path d="M100 120 Q75 112 55 130" stroke="#2d4a12" stroke-width="1" fill="none" opacity="0.3"/>
+        <path d="M100 120 Q125 112 145 130" stroke="#2d4a12" stroke-width="1" fill="none" opacity="0.3"/>
+        <line x1="100" y1="170" x2="100" y2="195" stroke="#5a7d3a" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+        <circle cx="100" cy="105" r="85" fill="none" stroke="#5a7d3a" stroke-width="1.5" opacity="0.12" stroke-dasharray="8 4"/>
+      </svg>
+    </div>
+
+    <!-- Text overlay -->
+    <div class="hero-scrub-text" id="heroScrubText">
+      <div class="label" id="scrubLabel">Die Mission</div>
+      <div class="title" id="scrubTitle">In 30 Metern Höhe<br>beginnt unsere Arbeit.</div>
+      <div class="accent" id="scrubAccent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Logo landing zone -->
+<div class="logo-landing" id="logoLanding">
+  <img src="leafgo_logo_sharp.png" id="landingLogo" alt="Leaf Go"
+       style="filter: brightness(0) invert(1) drop-shadow(0 0 80px rgba(90,125,58,0.25));">
+</div>
+
+<!-- ════════════ SITE CONTENT ════════════ -->
+<div class="site-content" id="siteContent">
+
+<section id="story">
+  <div class="story-grid">
+    <div class="story-text">
+      <p class="section-label reveal reveal-up">Die Geschichte</p>
+      <h2 class="reveal reveal-up">Die Ruhe<br>in 30 Metern Höhe.</h2>
+      <p class="lead reveal reveal-up">Magnus Neitzel hat sein halbes Leben in Baumkronen verbracht. Oben, wo der Wind die Äste biegt und jedes Gramm am Seil zählt, <span class="highlight">lernt man Dinge über Bäume, die man vom Boden aus nicht sieht.</span></p>
+      <p class="reveal reveal-up">Dass ein scheinbar gesunder Ast innen hohl sein kann. Dass die Wurzeln mehr verraten als die Krone. Dass jeder Baum eine eigene Persönlichkeit hat — und eigene Bedürfnisse.</p>
+      <p class="reveal reveal-up">Heute bringt Magnus dieses Wissen zu Ihnen nach Hause. Zusammen mit der Präzision eines Steinmetzes und dem gestalterischen Blick eines Landschaftsgärtners.</p>
+    </div>
+    <div class="story-visual reveal reveal-right" id="storyImg">
+      <img src="craft.jpg" alt="Baumpflege Handwerk">
+      <p class="caption">Präzision, die man spürt. An jedem Ast, an jedem Stein.</p>
+    </div>
+  </div>
+</section>
+
+<section class="portrait-section" id="portrait">
+  <div class="portrait-grid">
+    <div class="portrait-img-wrap reveal reveal-left">
+      <img src="IMG_4453.jpg" alt="Magnus Neitzel — Leaf Go Gründer" loading="lazy">
+    </div>
+    <div class="portrait-text reveal reveal-right">
+      <p class="section-label">Das Gesicht dahinter</p>
+      <p class="name">Magnus Neitzel</p>
+      <p class="role">Gründer &amp; Geschäftsführer</p>
+      <p style="color:#555; font-size:1rem; line-height:1.7;">
+        European Tree Worker. Steinmetz. Landschaftsgärtner.<br><br>
+        Magnus spricht die Sprache der Bäume — und die der Steine. Seit 8 Jahren arbeitet er im gesamten Ruhrgebiet. Immer mit dem gleichen Anspruch: <span class="highlight">Kein Baum ist wie der andere. Kein Garten ist Standard.</span>
+      </p>
+      <p style="color:#888; font-size:0.85rem; margin-top:1rem;">
+        📞 <a href="tel:+491****9117" style="color:#5a7d3a; text-decoration:none;">0176 80539117</a><br>
+        ✉️ <a href="mailto:magnusneit56@gmail.com" style="color:#5a7d3a; text-decoration:none;">magnusneit56@gmail.com</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="leistungen">
+  <p class="section-label reveal reveal-up">Leistungen</p>
+  <h2 class="reveal reveal-up">Drei Disziplinen.<br>Eine Philosophie.</h2>
+  <div class="services-grid">
+    <div class="service-card reveal reveal-up" id="svc1">
+      <img src="IMG_5608.JPG" alt="Baumpflege per Seilklettertechnik" loading="lazy" style="object-position: center 30%;">
+      <div class="body">
+        <h3>Baumpflege &amp; Baumfällung</h3>
+        <p>Kronenschnitt, Verkehrssicherung, Problemfällung — alles per Seilklettertechnik. Kein Hebebühnen-Lärm, kein zerstörter Rasen. Nur Können, das von oben kommt.</p>
+      </div>
+    </div>
+    <div class="service-card reveal reveal-up" id="svc2">
+      <img src="garden.jpg" alt="Gartengestaltung" loading="lazy">
+      <div class="body">
+        <h3>Garten- &amp; Landschaftsbau</h3>
+        <p>Neuanlagen, Wegebau, Pflanzungen, Teichbau, Zaunmontage. Von der Terrasse bis zum Staudenbeet — aus einer Hand, ohne Subunternehmer.</p>
+      </div>
+    </div>
+    <div class="service-card reveal reveal-up" id="svc3">
+      <img src="stone.jpg" alt="Natursteinarbeiten" loading="lazy">
+      <div class="body">
+        <h3>Naturstein &amp; Trockenmauern</h3>
+        <p>Massive Steinelemente, Restaurierung, Trockenmauern aus Ruhrsandstein. Sechs Jahre Steinmetz-Erfahrung fließen in jeden Quadratmeter.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="gallery" id="galerie">
+  <div class="gallery-inner">
+    <p class="section-label reveal reveal-up">In Aktion</p>
+    <h2 class="reveal reveal-up">Echte Arbeit.<br>Echte Bilder.</h2>
+    <div class="gallery-grid">
+      <div class="item tall reveal reveal-up"><img src="IMG_5602.JPG" alt="Baumkletterer in Aktion" loading="lazy"></div>
+      <div class="item reveal reveal-up"><img src="IMG_5605.JPG" alt="Baumpflege mit Kettensäge" loading="lazy"></div>
+      <div class="item reveal reveal-up"><img src="IMG_5361.jpg" alt="Gartenpflege und Formschnitt" loading="lazy"></div>
+      <div class="item tall reveal reveal-up"><img src="hero.jpg" alt="Baumriese mit Kletterseil" loading="lazy" style="object-position: 60% center;"></div>
+      <div class="item wide reveal reveal-up"><img src="IMG_4236.jpg" alt="Gartenanlage mit Hortensien" loading="lazy" style="object-position: center 65%;"></div>
+    </div>
+  </div>
+</section>
+
+<section class="van-band" id="van">
+  <div class="van-band-inner">
+    <div class="text reveal reveal-left">
+      <h3>Immer für Sie unterwegs</h3>
+      <p>Unser Leaf Go Einsatzfahrzeug — voll ausgestattet mit STIHL Profi-Geräten, Kletterausrüstung und Allem, was es für Ihren Auftrag braucht. Kein Subunternehmer. Keine Leihtechnik. <span style="color:#fff;">Alles aus einer Hand.</span></p>
+      <p style="color:#5a7d3a; font-size:0.9rem; margin-top:1rem; letter-spacing:0.05em;">LEAF-GO.DE &nbsp;·&nbsp; 0176 80539117</p>
+    </div>
+    <div class="reveal reveal-right"><img src="IMG_5283.jpg" alt="Leaf Go Einsatzfahrzeug mit Anhänger" loading="lazy"></div>
+  </div>
+</section>
+
+<section class="trust" id="trust">
+  <p class="section-label reveal reveal-up">Vertrauen</p>
+  <h2 class="reveal reveal-up">Zertifiziert. Erfahren.<br>Versichert.</h2>
+  <div class="trust-grid">
+    <div class="trust-card reveal reveal-scale" id="trust1">
+      <div class="number" id="count8">0</div>
+      <div class="label">Jahre Berufserfahrung<br>in Baumpflege &amp; Seilklettertechnik</div>
+    </div>
+    <div class="trust-card reveal reveal-scale" id="trust2">
+      <div class="number" style="font-size: 1.8rem; font-weight: 400; padding-top: 1rem;">European<br>Tree Worker</div>
+      <div class="label" style="margin-top: 0.5rem;">Europaweit anerkanntes Zertifikat<br>für professionelle Baumpflege</div>
+      <span class="cert-badge">ETW ZERTIFIZIERT</span>
+    </div>
+    <div class="trust-card reveal reveal-scale" id="trust3">
+      <div class="number">100%</div>
+      <div class="label">Betriebshaftpflicht &amp; UVV.<br>Weil Ihr Baum auch meine<br>Verantwortung ist.</div>
+    </div>
+  </div>
+</section>
+
+<section class="equipment" id="equipment">
+  <p class="section-label reveal reveal-up">Ausrüstung</p>
+  <h2 class="reveal reveal-up">Profi-Technik,<br>die man hört und spürt.</h2>
+  <p class="reveal reveal-up" style="color:#555; max-width:550px; margin:0 auto;">STIHL. Der Maßstab in der Baumpflege. Wir setzen auf das Beste — weil Ihr Baum nichts anderes verdient.</p>
+  <img src="IMG_3306.jpg" alt="STIHL Profi-Geräte von Leaf Go" class="reveal reveal-scale" loading="lazy">
+</section>
+
+<section class="voice" id="voice">
+  <blockquote class="reveal reveal-up">
+    „Ich habe in unzähligen Bäumen gestanden. Keiner war wie der andere. Deshalb gibt es bei Leaf Go auch keine Standardlösung — nur die, die zu Ihrem Baum, Ihrem Garten, Ihrem Zuhause passt."
+  </blockquote>
+  <p class="attribution reveal reveal-up">MAGNUS NEITZEL · GRÜNDER LEAF GO</p>
+</section>
+
+<section class="location" id="location">
+  <p class="section-label reveal reveal-up">Verwurzelt</p>
+  <h2 class="reveal reveal-up">Zuhause im<br>Ruhrgebiet.</h2>
+  <p class="reveal reveal-up" style="color:#555; font-size:1.1rem; max-width:550px; margin:0 auto 1rem;">Von Stiepel über Weitmar bis Wiemelhausen — Leaf Go kennt die Gärten, die Bäume und die Böden dieser Region. Weil wir hier leben.</p>
+  <div class="location-tags" id="locTags">
+    <span class="location-tag reveal reveal-scale">Bochum</span>
+    <span class="location-tag reveal reveal-scale">Stiepel</span>
+    <span class="location-tag reveal reveal-scale">Weitmar</span>
+    <span class="location-tag reveal reveal-scale">Wiemelhausen</span>
+    <span class="location-tag reveal reveal-scale">Hattingen</span>
+    <span class="location-tag reveal reveal-scale">Essen-Süd</span>
+  </div>
+</section>
+
+<section class="cta" id="cta">
+  <h2 class="reveal reveal-up">Lassen Sie uns über<br>Ihren Baum sprechen.</h2>
+  <p class="reveal reveal-up">Kostenlos. Unverbindlich. Auf Augenhöhe — oder auf 30 Metern.</p>
+  <a href="tel:+491****9117" class="cta-button reveal reveal-scale">Jetzt anrufen</a>
+  <div class="cta-contact reveal reveal-up">
+    <a href="mailto:magnusneit56@gmail.com">magnusneit56@gmail.com</a> &nbsp;·&nbsp; <a href="tel:+491****9117">0176 80539117</a>
+  </div>
+</section>
+
+<footer>
+  Leaf Go &copy; 2026 &nbsp;·&nbsp; Magnus Neitzel &nbsp;·&nbsp; Feldsieper Str. 128, 44809 Bochum
+</footer>
+
+</div><!-- /.site-content -->
+
+<!-- GSAP + ScrollTrigger + Lenis -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+<script>
+(function() {
+  // ════════════ SCROLL-DRIVEN VIDEO HERO ════════════
+  const video = document.getElementById('heroVideo');
+  const scrubSection = document.getElementById('heroScrub');
+  const leafSVG = document.getElementById('heroLeafSVG');
+  const scrubLabel = document.getElementById('scrubLabel');
+  const scrubTitle = document.getElementById('scrubTitle');
+  const scrubAccent = document.getElementById('scrubAccent');
+  const landingLogo = document.getElementById('landingLogo');
+  const logoLanding = document.getElementById('logoLanding');
+
+  let videoReady = false;
+
+  video.addEventListener('loadedmetadata', () => {
+    videoReady = true;
+    video.pause();
+    video.currentTime = 0;
+  });
+  if (video.readyState >= 2) videoReady = true;
+  video.load();
+
+  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function updateScrub() {
+    if (!videoReady) { requestAnimationFrame(updateScrub); return; }
+
+    const rect = scrubSection.getBoundingClientRect();
+    const wh = window.innerHeight;
+    const progress = clamp((wh - rect.top) / (wh + rect.height), 0, 1);
+
+    // Phase 1: Video scrubbing (0 → 0.65)
+    const phase1 = clamp(progress / 0.65, 0, 1);
+    video.currentTime = phase1 * video.duration;
+
+    // Leaf animation (0.25 → 0.65 of phase1, peak in middle)
+    const leafRaw = clamp((phase1 - 0.2) / 0.5, 0, 1);
+    const leafOpacity = clamp(leafRaw * 2, 0, 1) * clamp((1 - leafRaw) * 3, 0, 1);
+    const leafScale = lerp(0.25, 1.2, leafRaw);
+    const leafRotate = lerp(-20, 2, leafRaw);
+    const leafY = lerp(80, -15, leafRaw);
+
+    leafSVG.style.opacity = leafOpacity;
+    leafSVG.style.transform = `scale(${leafScale}) rotate(${leafRotate}deg) translateY(${leafY}px)`;
+
+    // Text fades in (0.55 → 1.0 of phase1)
+    const textP = clamp((phase1 - 0.55) / 0.45, 0, 1);
+    scrubLabel.style.opacity = textP;
+    scrubLabel.style.transform = `translateY(${lerp(20, 0, textP)}px)`;
+    scrubTitle.style.opacity = textP;
+    scrubTitle.style.transform = `translateY(${lerp(30, 0, textP)}px)`;
+    scrubAccent.style.opacity = textP;
+
+    // Phase 2: Leaf fades, video dims (0.65 → 1.0)
+    const phase2 = clamp((progress - 0.65) / 0.35, 0, 1);
+    leafSVG.style.opacity = leafOpacity * (1 - clamp(phase2 * 2, 0, 1));
+    video.style.filter = `brightness(${lerp(0.45, 0.25, phase2)}) saturate(${lerp(0.6, 0.3, phase2)})`;
+
+    // Logo landing zone
+    const lr = logoLanding.getBoundingClientRect();
+    const lp = clamp((wh - lr.top) / (wh + lr.height), 0, 1);
+    const logoS = lerp(2.2, 1.0, clamp(lp * 1.4, 0, 1));
+    const logoO = clamp(lp * 1.6, 0, 1);
+    landingLogo.style.opacity = logoO;
+    landingLogo.style.transform = `scale(${logoS})`;
+
+    requestAnimationFrame(updateScrub);
+  }
+
+  video.addEventListener('loadedmetadata', () => {
+    requestAnimationFrame(updateScrub);
+  });
+  requestAnimationFrame(updateScrub);
+
+  // ════════════ SCROLL ANIMATIONS ════════════
+  gsap.registerPlugin(ScrollTrigger);
+
+  const lenis = new Lenis({
+    duration: 1.4,
+    easing: (t) => 1 - Math.pow(1 - t, 4),
+    smoothWheel: true,
+  });
+  function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+  requestAnimationFrame(raf);
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((time) => lenis.raf(time * 1000));
+  gsap.ticker.lagSmoothing(0);
+
+  // Section reveals
+  const reveals = gsap.utils.toArray('.reveal');
+  reveals.forEach((el) => {
+    const isScale = el.classList.contains('reveal-scale');
+    gsap.fromTo(el,
+      { opacity: 0, y: 60, scale: isScale ? 0.9 : 1 },
+      { opacity: 1, y: 0, scale: 1, duration: 1, ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 88%', end: 'top 70%', toggleActions: 'play none none none' } }
+    );
+  });
+
+  // Service cards
+  gsap.fromTo('#svc1, #svc2, #svc3', { opacity: 0, y: 80 }, {
+    opacity: 1, y: 0, duration: 0.9, stagger: 0.15, ease: 'power3.out',
+    scrollTrigger: { trigger: '#leistungen', start: 'top 75%' }
+  });
+
+  // Gallery
+  gsap.fromTo('.gallery-grid .item', { opacity: 0, y: 40, scale: 0.95 }, {
+    opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.1, ease: 'power3.out',
+    scrollTrigger: { trigger: '#galerie', start: 'top 78%' }
+  });
+
+  // Location tags
+  gsap.fromTo('#locTags .location-tag', { opacity: 0, scale: 0.5 }, {
+    opacity: 1, scale: 1, duration: 0.6, stagger: 0.08, ease: 'back.out(1.7)',
+    scrollTrigger: { trigger: '#location', start: 'top 80%' }
+  });
+
+  // Trust counter
+  ScrollTrigger.create({
+    trigger: '#trust', start: 'top 70%',
+    onEnter: () => {
+      gsap.fromTo('#count8', { innerText: 0 }, {
+        innerText: 8, duration: 1.5, ease: 'power2.out', snap: { innerText: 1 },
+        onUpdate: function() { document.getElementById('count8').textContent = Math.round(this.targets()[0].innerText); }
+      });
+    },
+    once: true
+  });
+
+  // CTA pulse
+  gsap.fromTo('.cta-button', { scale: 0.85, opacity: 0 }, {
+    scale: 1, opacity: 1, duration: 0.8, ease: 'elastic.out(1, 0.6)',
+    scrollTrigger: { trigger: '#cta', start: 'top 85%' }
+  });
+
+  // Vignette intensify on dark sections
+  gsap.to('.vignette', {
+    opacity: 0.6,
+    scrollTrigger: { trigger: '#voice', start: 'top bottom', end: 'bottom top', scrub: true }
+  });
+})();
+</script>
+
+
+<!-- ── Floating Contact Button ── -->
+<div class="floating-contact" id="floatingContact">
+  <div class="fc-actions">
+    <a href="tel:017680539117" class="fc-btn fc-call" aria-label="Anrufen">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    </a>
+    <button class="fc-btn fc-contact-btn" id="fcOpenModal" aria-label="Kontaktformular">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    </button>
+  </div>
+  <button class="fc-main" id="fcToggle" aria-label="Kontakt-Optionen">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  </button>
+</div>
+
+<!-- ── Contact Form Modal ── -->
+<div class="fc-modal-overlay" id="fcModal">
+  <div class="fc-modal">
+    <button class="fc-modal-close" id="fcModalClose">&times;</button>
+    <h3>Kontakt aufnehmen</h3>
+    <p class="fc-subtitle">Schreiben Sie uns — wir melden uns in Kürze bei Ihnen.</p>
+    <form id="fcForm">
+      <div class="fc-form-fields">
+        <div class="form-group">
+          <label for="fcName">Name *</label>
+          <input type="text" id="fcName" required placeholder="Ihr vollständiger Name">
+        </div>
+        <div class="form-group">
+          <label for="fcEmail">E-Mail</label>
+          <input type="email" id="fcEmail" placeholder="ihre@email.de">
+        </div>
+        <div class="form-group">
+          <label for="fcPhone">Telefon *</label>
+          <input type="tel" id="fcPhone" required placeholder="0176 …">
+        </div>
+        <div class="form-group">
+          <label for="fcMessage">Ihre Nachricht *</label>
+          <textarea id="fcMessage" required placeholder="Was können wir für Sie tun?"></textarea>
+        </div>
+      </div>
+      <button type="submit" class="fc-submit">Nachricht senden</button>
+      <div class="fc-success">
+        <span class="icon">&#10003;</span>
+        <h4>Anfrage gesendet!</h4>
+        <p>Ihre Anfrage wurde gesendet – wir melden uns in Kürze bei Ihnen.</p>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+(function() {
+  const story = document.getElementById('story');
+  const floatContact = document.getElementById('floatingContact');
+  const fcToggle = document.getElementById('fcToggle');
+  const fcOpenModal = document.getElementById('fcOpenModal');
+  const fcModal = document.getElementById('fcModal');
+  const fcModalClose = document.getElementById('fcModalClose');
+  const fcForm = document.getElementById('fcForm');
+
+  if (!story || !floatContact) return;
+
+  // Show button when #story enters viewport
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        floatContact.classList.add('visible');
+      }
+    });
+  }, { threshold: 0 });
+  observer.observe(story);
+
+  // Toggle expanded state
+  fcToggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    floatContact.classList.toggle('expanded');
+  });
+
+  // Close expanded on outside click
+  document.addEventListener('click', function(e) {
+    if (floatContact.classList.contains('expanded') && !floatContact.contains(e.target)) {
+      floatContact.classList.remove('expanded');
+    }
+  });
+
+  // Open modal
+  if (fcOpenModal) {
+    fcOpenModal.addEventListener('click', function() {
+      floatContact.classList.remove('expanded');
+      fcModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+  }
+
+  // Close modal
+  function closeModal() {
+    fcModal.classList.remove('active');
+    document.body.style.overflow = '';
+    setTimeout(function() {
+      fcForm.reset();
+      document.querySelector('.fc-form-fields').style.display = '';
+      document.querySelector('.fc-submit').style.display = '';
+      document.querySelector('.fc-success').classList.remove('show');
+    }, 350);
+  }
+
+  if (fcModalClose) fcModalClose.addEventListener('click', closeModal);
+  fcModal.addEventListener('click', function(e) {
+    if (e.target === fcModal) closeModal();
+  });
+
+  // Escape key closes modal
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && fcModal.classList.contains('active')) closeModal();
+  });
+
+  // Simulated form submission
+  if (fcForm) {
+    fcForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      document.querySelector('.fc-form-fields').style.display = 'none';
+      document.querySelector('.fc-submit').style.display = 'none';
+      document.querySelector('.fc-success').classList.add('show');
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

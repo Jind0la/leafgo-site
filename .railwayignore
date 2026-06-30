@@ -3,12 +3,12 @@ _archive
 .gitignore
 README.md
 AGENTS.md
-# Exclude original JPG files — WebP versions are used
+# Exclude original heavy assets
 *.jpg
 *.JPG
 *.jpeg
-# Keep only the poster
 !hero-poster.jpg
-# Exclude unused assets from deploy
 stone-source-crop.webp
 hero-poster.webp
+# Exclude original uncompressed video
+hero-header-scrub-orig.mp4
